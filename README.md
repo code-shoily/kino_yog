@@ -16,7 +16,7 @@ Add to your `mix.exs`:
 ```elixir
 def deps do
   [
-    {:kino_yog, "~> 0.1.0"}
+    {:kino_yog, github: "code-shoily/kino_yog", branch: "main"}
   ]
 end
 ```
