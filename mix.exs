@@ -26,7 +26,7 @@ defmodule KinoYog.MixProject do
 
   defp deps do
     [
-      {:yog_ex, github: "code-shoily/yog_ex", branch: "main"},
+      {:yog_ex, git: "git@github.com:code-shoily/yog_ex.git", branch: "main"},
       {:kino, "~> 0.14"},
       {:jason, "~> 1.4"},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false}
