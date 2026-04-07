@@ -11,185 +11,8 @@ defmodule KinoYog.RenderCell do
   use Kino.JS.Live
   use Kino.SmartCell, name: "Yog - Render Graph"
 
-  @graph_types [
-    # Classic deterministic graphs
-    %{
-      id: "complete",
-      name: "Complete Graph (Kₙ)",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [%{name: "n", type: "integer", min: 1, max: 100, default: 5, label: "Nodes (n)"}],
-      guards: %{max_nodes: 200}
-    },
-    %{
-      id: "cycle",
-      name: "Cycle Graph (Cₙ)",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [%{name: "n", type: "integer", min: 3, max: 200, default: 5, label: "Nodes (n)"}],
-      guards: %{max_nodes: 500}
-    },
-    %{
-      id: "path",
-      name: "Path Graph (Pₙ)",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [%{name: "n", type: "integer", min: 1, max: 200, default: 5, label: "Nodes (n)"}],
-      guards: %{max_nodes: 500}
-    },
-    %{
-      id: "star",
-      name: "Star Graph (Sₙ)",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [%{name: "n", type: "integer", min: 2, max: 200, default: 5, label: "Nodes (n)"}],
-      guards: %{max_nodes: 500}
-    },
-    %{
-      id: "wheel",
-      name: "Wheel Graph (Wₙ)",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [%{name: "n", type: "integer", min: 4, max: 200, default: 5, label: "Nodes (n)"}],
-      guards: %{max_nodes: 500}
-    },
-    %{
-      id: "grid_2d",
-      name: "2D Grid",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [
-        %{name: "rows", type: "integer", min: 1, max: 20, default: 3, label: "Rows"},
-        %{name: "cols", type: "integer", min: 1, max: 20, default: 4, label: "Columns"}
-      ],
-      guards: %{max_nodes: 400}
-    },
-    %{
-      id: "complete_bipartite",
-      name: "Complete Bipartite (Kₘ,ₙ)",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [
-        %{name: "m", type: "integer", min: 1, max: 50, default: 3, label: "Partition A"},
-        %{name: "n", type: "integer", min: 1, max: 50, default: 4, label: "Partition B"}
-      ],
-      guards: %{max_nodes: 100}
-    },
-    %{
-      id: "binary_tree",
-      name: "Binary Tree",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [%{name: "depth", type: "integer", min: 0, max: 10, default: 3, label: "Depth"}],
-      guards: %{max_depth: 10, max_nodes: 2047}
-    },
-    %{
-      id: "petersen",
-      name: "Petersen Graph",
-      category: "Named",
-      module: Yog.Generator.Classic,
-      params: [],
-      guards: %{fixed_size: 10}
-    },
-    %{
-      id: "hypercube",
-      name: "Hypercube (Qₙ)",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [%{name: "n", type: "integer", min: 0, max: 8, default: 3, label: "Dimension (n)"}],
-      guards: %{max_n: 8, max_nodes: 256}
-    },
-    %{
-      id: "ladder",
-      name: "Ladder Graph",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [%{name: "n", type: "integer", min: 1, max: 100, default: 4, label: "Rungs (n)"}],
-      guards: %{max_nodes: 200}
-    },
-    %{
-      id: "turan",
-      name: "Turán Graph T(n,r)",
-      category: "Classic",
-      module: Yog.Generator.Classic,
-      params: [
-        %{name: "n", type: "integer", min: 1, max: 50, default: 10, label: "Total nodes (n)"},
-        %{name: "r", type: "integer", min: 1, max: 10, default: 3, label: "Partitions (r)"}
-      ],
-      guards: %{max_nodes: 100}
-    },
-
-    # Random graphs
-    %{
-      id: "erdos_renyi_gnp",
-      name: "Erdős-Rényi G(n,p)",
-      category: "Random",
-      module: Yog.Generator.Random,
-      params: [
-        %{name: "n", type: "integer", min: 2, max: 100, default: 20, label: "Nodes (n)"},
-        %{
-          name: "p",
-          type: "float",
-          min: 0.0,
-          max: 1.0,
-          step: 0.01,
-          default: 0.15,
-          label: "Probability (p)"
-        }
-      ],
-      guards: %{max_nodes: 200}
-    },
-    %{
-      id: "barabasi_albert",
-      name: "Barabási-Albert",
-      category: "Random",
-      module: Yog.Generator.Random,
-      params: [
-        %{name: "n", type: "integer", min: 2, max: 200, default: 50, label: "Nodes (n)"},
-        %{name: "m", type: "integer", min: 1, max: 10, default: 2, label: "Edges per node (m)"}
-      ],
-      guards: %{max_nodes: 300}
-    },
-    %{
-      id: "watts_strogatz",
-      name: "Watts-Strogatz",
-      category: "Random",
-      module: Yog.Generator.Random,
-      params: [
-        %{name: "n", type: "integer", min: 3, max: 100, default: 20, label: "Nodes (n)"},
-        %{name: "k", type: "integer", min: 2, max: 10, default: 4, label: "Neighbors (k)"},
-        %{
-          name: "p",
-          type: "float",
-          min: 0.0,
-          max: 1.0,
-          step: 0.01,
-          default: 0.1,
-          label: "Rewiring (p)"
-        }
-      ],
-      guards: %{max_nodes: 200}
-    },
-    %{
-      id: "random_regular",
-      name: "Random d-Regular",
-      category: "Random",
-      module: Yog.Generator.Random,
-      params: [
-        %{name: "n", type: "integer", min: 2, max: 100, default: 10, label: "Nodes (n)"},
-        %{name: "d", type: "integer", min: 0, max: 10, default: 3, label: "Degree (d)"}
-      ],
-      guards: %{max_nodes: 200}
-    },
-    %{
-      id: "random_tree",
-      name: "Random Tree",
-      category: "Random",
-      module: Yog.Generator.Random,
-      params: [%{name: "n", type: "integer", min: 1, max: 200, default: 10, label: "Nodes (n)"}],
-      guards: %{max_nodes: 500}
-    }
-  ]
+  @graph_configs KinoYog.Generators.all()
+  @graph_types Enum.map(@graph_configs, fn g -> Map.drop(g, [:estimator]) end)
 
   @impl true
   # GraphViz layout engines
@@ -494,81 +317,24 @@ defmodule KinoYog.RenderCell do
     end
   end
 
-  defp estimate_nodes("complete", %{"n" => n}), do: n
-  defp estimate_nodes("cycle", %{"n" => n}), do: n
-  defp estimate_nodes("path", %{"n" => n}), do: n
-  defp estimate_nodes("star", %{"n" => n}), do: n
-  defp estimate_nodes("wheel", %{"n" => n}), do: n
-  defp estimate_nodes("grid_2d", %{"rows" => r, "cols" => c}), do: r * c
-  defp estimate_nodes("complete_bipartite", %{"m" => m, "n" => n}), do: m + n
-  defp estimate_nodes("binary_tree", %{"depth" => d}), do: Integer.pow(2, d + 1) - 1
-  defp estimate_nodes("petersen", _), do: 10
-  defp estimate_nodes("hypercube", %{"n" => n}), do: Integer.pow(2, n)
-  defp estimate_nodes("ladder", %{"n" => n}), do: 2 * n
-  defp estimate_nodes("turan", %{"n" => n}), do: n
-  defp estimate_nodes("erdos_renyi_gnp", %{"n" => n}), do: n
-  defp estimate_nodes("barabasi_albert", %{"n" => n}), do: n
-  defp estimate_nodes("watts_strogatz", %{"n" => n}), do: n
-  defp estimate_nodes("random_regular", %{"n" => n}), do: n
-  defp estimate_nodes("random_tree", %{"n" => n}), do: n
-  defp estimate_nodes(_, _), do: 100
+  defp estimate_nodes(type_id, parsed_params) do
+    KinoYog.Generators.estimate_nodes(type_id, parsed_params)
+  end
 
   defp do_generate(type_id, params, type) do
-    case type_id do
-      "complete" ->
-        Yog.Generator.Classic.complete_with_type(params["n"], type)
+    graph_def = Enum.find(@graph_configs, &(&1.id == type_id))
+    module = graph_def.module
 
-      "cycle" ->
-        Yog.Generator.Classic.cycle_with_type(params["n"], type)
+    # PLATONIC SOLIDS and some others might not support graph_type or have different names
+    function_name = graph_def[:function] || String.to_atom("#{type_id}_with_type")
 
-      "path" ->
-        Yog.Generator.Classic.path_with_type(params["n"], type)
+    # Map params to arguments in order
+    args = for p <- graph_def.params, do: params[p.name]
 
-      "star" ->
-        Yog.Generator.Classic.star_with_type(params["n"], type)
+    # Append type if not explicitly disabled
+    args = if graph_def[:no_type_suffix], do: args, else: args ++ [type]
 
-      "wheel" ->
-        Yog.Generator.Classic.wheel_with_type(params["n"], type)
-
-      "grid_2d" ->
-        Yog.Generator.Classic.grid_2d_with_type(params["rows"], params["cols"], type)
-
-      "complete_bipartite" ->
-        Yog.Generator.Classic.complete_bipartite_with_type(params["m"], params["n"], type)
-
-      "binary_tree" ->
-        Yog.Generator.Classic.binary_tree_with_type(params["depth"], type)
-
-      "petersen" ->
-        Yog.Generator.Classic.petersen_with_type(type)
-
-      "hypercube" ->
-        Yog.Generator.Classic.hypercube_with_type(params["n"], type)
-
-      "ladder" ->
-        Yog.Generator.Classic.ladder_with_type(params["n"], type)
-
-      "turan" ->
-        Yog.Generator.Classic.turan_with_type(params["n"], params["r"], type)
-
-      "erdos_renyi_gnp" ->
-        Yog.Generator.Random.erdos_renyi_gnp_with_type(params["n"], params["p"], type)
-
-      "barabasi_albert" ->
-        Yog.Generator.Random.barabasi_albert_with_type(params["n"], params["m"], type)
-
-      "watts_strogatz" ->
-        Yog.Generator.Random.watts_strogatz_with_type(params["n"], params["k"], params["p"], type)
-
-      "random_regular" ->
-        Yog.Generator.Random.random_regular_with_type(params["n"], params["d"], type)
-
-      "random_tree" ->
-        Yog.Generator.Random.random_tree_with_type(params["n"], type)
-
-      _ ->
-        raise "Unknown graph type: #{type_id}"
-    end
+    apply(module, function_name, args)
   end
 
   defp compute_stats(graph) do
@@ -697,19 +463,33 @@ defmodule KinoYog.RenderCell do
       # The graph visualization is shown above
       """
     else
-      graph_def = Enum.find(@graph_types, &(&1.id == attrs["graph_type"]))
+      graph_def = Enum.find(@graph_configs, &(&1.id == attrs["graph_type"]))
 
       param_list =
         graph_def.params
-        |> Enum.map(fn p -> attrs["params"][p.name] end)
+        |> Enum.map(fn p ->
+          val = attrs["params"][p.name]
+          if p.type == "integer", do: val, else: val
+        end)
         |> Enum.join(", ")
 
+      function_name = graph_def[:function] || attrs["graph_type"]
+
       type_suffix =
-        if attrs["directed"], do: "_with_type(#{param_list}, :directed)", else: "(#{param_list})"
+        cond do
+          graph_def[:no_type_suffix] ->
+            "(#{param_list})"
+
+          attrs["directed"] ->
+            "_with_type(#{param_list}#{if(param_list == "", do: "", else: ", ")}:directed)"
+
+          true ->
+            "(#{param_list})"
+        end
 
       """
       # Generate #{graph_def.name}
-      #{attrs["variable"]} = Yog.Generator.#{graph_def.module |> Module.split() |> List.last()}.#{attrs["graph_type"]}#{type_suffix}
+      #{attrs["variable"]} = Yog.Generator.#{graph_def.module |> Module.split() |> List.last()}.#{function_name}#{type_suffix}
       """
     end
   end
